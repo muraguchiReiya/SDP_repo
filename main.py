@@ -1,16 +1,32 @@
-# これはサンプルの Python スクリプトです。
+from flask import Flask, render_template
+import psycopg2
+from dotenv import load_dotenv
+import os
+load_dotenv()
 
-# ⌃R を押して実行するか、ご自身のコードに置き換えてください。
-# ⇧ を2回押す を押すと、クラス/ファイル/ツールウィンドウ/アクション/設定を検索します。
+# 環境変数を参照
 
+user= os.getenv('USER_NAME')
+pswd= os.getenv('PASS')
+db=os.getenv('DBNAME')
+host=os.getenv('HOST')
 
-def print_hi(name):
-    # スクリプトをデバッグするには以下のコード行でブレークポイントを使用してください。
-    print(f'Hi, {name}')  # ⌘F8を押すとブレークポイントを切り替えます。
+dsn = f"dbname={db} host={host} user={user} password={pswd}"
 
+app = Flask(__name__)
 
-# ガター内の緑色のボタンを押すとスクリプトを実行します。
+@app.route('/')
+def route():
+
+    conn = psycopg2.connect(dsn)  # コネクション
+    cur = conn.cursor()
+    cur.execute("select * from temp;")
+    result=cur.fetchone()
+    conn.close()
+
+    return render_template('index.html',data=result)
+
 if __name__ == '__main__':
-    print_hi('PyCharm')
+    app.run(host='0.0.0.0', port=8080)
 
-# PyCharm のヘルプは https://www.jetbrains.com/help/pycharm/ を参照してください
+
