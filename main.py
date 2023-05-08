@@ -2,9 +2,9 @@ from flask import Flask, render_template
 import psycopg2
 from dotenv import load_dotenv
 import os
-load_dotenv()
+import pandas as pd
 
-# 環境変数を参照
+load_dotenv()
 
 user= os.getenv('USER_NAME')
 pswd= os.getenv('PASS')
@@ -15,18 +15,26 @@ dsn = f"dbname={db} host={host} user={user} password={pswd}"
 
 app = Flask(__name__)
 
+def create_dict(df):
+    value=[]
+    for i in range(len(df)):
+        data={'time':df.iat[i,0],'temp':df.iat[i,1]}
+        value.append(data)
+    value=list(reversed(value))
+    return value
+
 @app.route('/')
 def route():
-
-    conn = psycopg2.connect(dsn)  # コネクション
-    cur = conn.cursor()
-    cur.execute("select * from temp;")
-    result=cur.fetchone()
+    sql= 'SELECT * FROM temp;'
+    conn = psycopg2.connect(dsn)
+    df = pd.read_sql(sql=sql, con=conn)
+    df['time']=pd.to_datetime(df['time']).dt.strftime('%Y年%m月%d日%H時%M分')
     conn.close()
 
-    return render_template('index.html',data=result)
+    data=create_dict(df)
+
+    return render_template('SDP_demo.html',data=data)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)
-
 
