@@ -1,14 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
     <meta charset="UTF-8">
     <title>SDPデモ</title>
+    <link rel="stylesheet" type="text/css" href="../static/demo_style.css">
 </head>
 <body>
+<h1>温度モニタリングシステム(デモ)</h1>
 <div class="content">
-    {% for i in data %}
-    <p>{{i.time}}：{{i.temp}}℃</p>
-    {% endfor %}
+    <div class="value">
+        {% for i in data %}
+        <p>{{i.time}}：{{i.temp}}℃</p>
+        {% endfor %}
+    </div>
+    <div class="graph">
+        <p class="title">気温推移</p>
+        <img src="../static/image/temp.png" class="suii">
+        <p class="title">気温分布</p>
+        <img src="../static/image/hist.png" class="hist">
+    </div>
 </div>
+
 </body>
 </html>
